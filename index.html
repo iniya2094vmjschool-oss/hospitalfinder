@@ -514,10 +514,6 @@
           <option value="">— Choose a district —</option>
         </select>
       </div>
-      <button class="btn btn-primary" id="locateBtn" onclick="getLocation()" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
-        Use My Location
-      </button>
       <button class="btn btn-outline" onclick="goBack()">← Back</button>
     </div>
 
@@ -595,8 +591,6 @@ function selectState(state) {
   document.getElementById('step2').classList.remove('hidden');
   document.getElementById('step3').classList.add('hidden');
   document.getElementById('locationStatus').classList.add('hidden');
-  document.getElementById('locateBtn').disabled = true;
-  userLat = null; userLng = null;
 
   setBreadcrumb(2);
   document.getElementById('step2').scrollIntoView({behavior:'smooth', block:'start'});
@@ -604,9 +598,16 @@ function selectState(state) {
 
 function onDistrictChange() {
   const val = document.getElementById('districtSelect').value;
-  document.getElementById('locateBtn').disabled = !val;
   document.getElementById('locationStatus').classList.add('hidden');
   document.getElementById('step3').classList.add('hidden');
+  if (!val) return;
+
+  if (userLat !== null && userLng !== null) {
+    showResults(val);
+  } else {
+    setStatus('📡 Waiting for your location… Please allow location access if prompted.', 'loading');
+    requestLocation(() => showResults(val));
+  }
 }
 
 function goBack() {
@@ -635,33 +636,26 @@ function setStatus(msg, type) {
   el.classList.remove('hidden');
 }
 
-function getLocation() {
-  const district = document.getElementById('districtSelect').value;
-  if (!district) return;
-
+function requestLocation(onSuccess) {
   if (!navigator.geolocation) {
     setStatus('⚠️ Geolocation is not supported by your browser. Try a modern browser.', 'error');
     return;
   }
-
-  setStatus('Requesting your location…', 'loading');
-  document.getElementById('locateBtn').disabled = true;
-
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       userLat = pos.coords.latitude;
       userLng = pos.coords.longitude;
-      setStatus(`✅ Location detected: ${userLat.toFixed(5)}, ${userLng.toFixed(5)}`, 'success');
-      document.getElementById('locateBtn').disabled = false;
-      showResults(district);
+      if (onSuccess) onSuccess();
     },
     (err) => {
       let msg = 'Unable to get your location.';
-      if (err.code === 1) msg = '🔒 Location permission denied. Please allow location access in your browser settings.';
+      if (err.code === 1) msg = '🔒 Location permission denied. Please allow location access in your browser settings, then select a district.';
       else if (err.code === 2) msg = '📡 Location unavailable. Check your GPS or network connection.';
       else if (err.code === 3) msg = '⏱️ Location request timed out. Please try again.';
-      setStatus(msg, 'error');
-      document.getElementById('locateBtn').disabled = false;
+      // Only show error in status bar if step2 is visible
+      if (!document.getElementById('step2').classList.contains('hidden')) {
+        setStatus(msg, 'error');
+      }
     },
     { timeout: 15000, maximumAge: 60000, enableHighAccuracy: true }
   );
@@ -731,6 +725,8 @@ function escHtml(str) {
 }
 
 initMeta();
+// Ask for location permission immediately on page load
+requestLocation(null);
 </script>
 </body>
 </html>
