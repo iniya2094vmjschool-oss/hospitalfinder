@@ -9,19 +9,19 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --teal: #0d7377;
-    --teal-light: #14a9af;
-    --teal-pale: #e8f7f7;
+    --teal: #e05c8a;
+    --teal-light: #f07aaa;
+    --teal-pale: #fdf0f5;
     --rose: #e05c8a;
     --rose-pale: #fdf0f5;
-    --sand: #faf8f5;
-    --ink: #1a2332;
-    --muted: #6b7a8d;
-    --border: #e2e8f0;
+    --sand: #fff5f8;
+    --ink: #2d1a22;
+    --muted: #a07090;
+    --border: #f5d6e3;
     --white: #ffffff;
     --radius: 16px;
-    --shadow: 0 4px 24px rgba(13,115,119,0.10);
-    --shadow-lg: 0 12px 48px rgba(13,115,119,0.16);
+    --shadow: 0 4px 24px rgba(224,92,138,0.10);
+    --shadow-lg: 0 12px 48px rgba(224,92,138,0.16);
   }
 
   body {
@@ -39,7 +39,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 12px rgba(224,92,138,0.08);
   }
   .header-inner {
     max-width: 1100px;
@@ -152,9 +152,9 @@
     border-radius: 0 0 0 80px;
     opacity: 0.08;
   }
-  .state-card[data-state="Tamil Nadu"] .state-card-accent { background: var(--teal); }
-  .state-card[data-state="Karnataka"] .state-card-accent { background: var(--rose); }
-  .state-card[data-state="Maharashtra"] .state-card-accent { background: #7c5cbf; }
+  .state-card[data-state="Tamil Nadu"] .state-card-accent { background: #e05c8a; }
+  .state-card[data-state="Karnataka"] .state-card-accent { background: #f07aaa; }
+  .state-card[data-state="Maharashtra"] .state-card-accent { background: #c94070; }
 
   .state-icon {
     font-size: 2rem;
@@ -240,9 +240,9 @@
   .btn-primary {
     background: linear-gradient(135deg, var(--teal), var(--teal-light));
     color: white;
-    box-shadow: 0 4px 14px rgba(13,115,119,0.3);
+    box-shadow: 0 4px 14px rgba(224,92,138,0.3);
   }
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(13,115,119,0.4); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(224,92,138,0.4); }
   .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   .btn-outline {
     background: transparent;
@@ -266,7 +266,7 @@
   .status-info { background: #eff8ff; color: #1d7ad4; border: 1px solid #bee3f8; }
   .status-success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
   .status-error { background: #fff5f5; color: #dc2626; border: 1px solid #fecaca; }
-  .status-loading { background: var(--teal-pale); color: var(--teal); border: 1px solid #b2e4e6; }
+  .status-loading { background: var(--teal-pale); color: var(--teal); border: 1px solid #f5b8d0; }
 
   /* RESULTS */
   .results-header {
@@ -307,7 +307,7 @@
     transform: translateY(-1px);
   }
   .hospital-card.rank-1 { border-color: var(--teal); border-width: 2px; }
-  .hospital-card.rank-2 { border-color: #64b5c0; }
+  .hospital-card.rank-2 { border-color: #f07aaa; }
 
   .rank-badge {
     position: absolute;
@@ -567,7 +567,7 @@
 </main>
 
 <footer>
-  MaterniCare · Hospital data sourced from state health departments · For emergencies call <strong>108</strong>
+  Allobaby· Hospital data sourced from state health departments · For emergencies call <strong>108</strong>
 </footer>
 
 <script>
