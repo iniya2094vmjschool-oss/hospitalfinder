@@ -496,6 +496,21 @@
         </div>
       </div>
     </div>
+
+    <!-- NEARBY HOSPITALS (shown if location already granted) -->
+    <div id="nearbySection" class="hidden" style="margin-top:40px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+        <div>
+          <div class="section-eyebrow" style="margin-bottom:8px;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+            Based on your location
+          </div>
+          <div class="results-title" style="font-size:1.1rem;font-weight:700;color:var(--ink);">10 Nearest Hospitals Near You</div>
+        </div>
+        <span class="results-count" id="nearbyCount">10 hospitals</span>
+      </div>
+      <div id="nearbyGrid" class="hospital-grid"></div>
+    </div>
   </div>
 
   <!-- STEP 2: DISTRICT + LOCATION -->
@@ -724,9 +739,52 @@ function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function showNearbyHospitals() {
+  // Gather all hospitals across all states and find 10 nearest
+  const all = [];
+  for (const state of Object.keys(DATA)) {
+    for (const district of Object.keys(DATA[state])) {
+      for (const h of DATA[state][district]) {
+        if (h.lat && h.lng) all.push({...h, state, district});
+      }
+    }
+  }
+  const top10 = all
+    .map(h => ({...h, dist: haversine(userLat, userLng, h.lat, h.lng)}))
+    .filter(h => isFinite(h.dist))
+    .sort((a, b) => a.dist - b.dist)
+    .slice(0, 10);
+
+  document.getElementById('nearbyCount').textContent = top10.length + ' hospitals';
+  const grid = document.getElementById('nearbyGrid');
+  grid.innerHTML = top10.map((h, i) => {
+    const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : '';
+    const rankBadge = i < 3 ? `<div class="rank-badge">${['NEAREST','2ND','3RD'][i]}</div>` : '';
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lng}`;
+    return `<div class="hospital-card ${rankClass}">
+      ${rankBadge}
+      <div class="hosp-name">${escHtml(h.name)}</div>
+      <div style="font-size:0.73rem;color:var(--teal);font-weight:600;margin-bottom:4px;">${escHtml(h.district)}, ${escHtml(h.state)}</div>
+      <div class="hosp-address">${escHtml(h.address || 'Address not available')}</div>
+      <div class="hosp-footer">
+        <div class="distance-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+          ${h.dist.toFixed(1)} km
+        </div>
+        <a class="directions-btn" href="${mapsUrl}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          Directions
+        </a>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('nearbySection').classList.remove('hidden');
+}
+
 initMeta();
 // Ask for location permission immediately on page load
-requestLocation(null);
+requestLocation(showNearbyHospitals);
 </script>
 </body>
 </html>
